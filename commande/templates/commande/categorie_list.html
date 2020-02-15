@@ -1,0 +1,81 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col mt-3">
+            <button class="btn btn-success float-right" data-target="#add_categorie_modal" data-toggle="modal">Ajouter une categorie</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Liste des catégories</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Libelle</th>
+                            <th width="65%">Description</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for categorie in categories %}
+                            <tr>
+                                <td>{{ categorie.libelle|capfirst }}</td>
+                                <td>{{ categorie.description }}</td>
+                                <td>
+                                    <a href="{% url 'categorie_detail' categorie.id %}" class="btn btn-info categorie_edit_btn" data-toggle="modal" data-target="#edit_categorie_modal"><i class="fa fa-edit"> Modifier</i></a>
+                                    <a href="{% url 'categorie_delete' categorie.id %}" class="btn btn-danger delete_btn" data-toggle="modal"  data-target="#delete_confirmation_modal"><i class="fa fa-trash"> Supprimer</i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000
+            });
+
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        Toast.fire({
+                            type: 'error',
+                            title: '{{ error }}'
+                        })
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+
+            {#edit btn#}
+
+            $('.categorie_edit_btn').click(function (e) {
+               e.preventDefault();
+               url = $(this).attr('href')
+               $.get(url, function (data) {
+                   $('#edit_categorie_modal form').attr('action', '/categories/'+data.id+'/edit/')
+                   $('#edit_categorie_modal form')[0].reset()
+                   $('#edit_categorie_modal .categorie_libelle').val(data.libelle)
+                   $('#edit_categorie_modal .categorie_description').val(data.description)
+               })
+            });
+        });
+    </script>
+{% endblock %}

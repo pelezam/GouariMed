@@ -1,0 +1,112 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col mt-3">
+            <button class="btn btn-info float-left" data-target="#add_produit_modal" data-toggle="modal">Ajouter un Produit</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">List des produits</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="produit_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Libelle</th>
+                            <th>Prix</th>
+                            <th>Catégorie</th>
+                            <th>Description</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for produit in produits %}
+                            <tr>
+                                <td>{{ produit.libelle|capfirst }}</td>
+                                <td>{{ produit.prix }} Fcfa</td>
+                                <td>{{ produit.categorie|capfirst }}</td>
+                                <td>{{ produit.description }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'produit_detail' produit.id %}" class="text-lightblue produit_edit_btn" data-target="#edit_produit_modal" data-toggle="modal"><i class="fa fa-edit"></i></a>&nbsp;
+                                    <a href="{% url 'produit_delete' produit.id %}" class="text-danger delete_btn" data-toggle="modal"  data-target="#delete_confirmation_modal"><i class="fa fa-trash"></i></a>&nbsp;
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            $.get("{% url 'categorie_list' %}", function(data){
+                $('#produit_categorie').empty()
+                data = data['categories']
+                for(let i =0;i < data.length;i++){
+                    let option = $('<option></option>').attr('value', data[i].id).text(data[i].libelle.toUpperCase());
+                    $('#produit_categorie').append(option);
+                }
+            })
+
+            $('.produit_edit_btn').click(function (e) {
+                e.preventDefault()
+                url = $(this).attr('href')
+                $.get(url, function (data) {
+                    $('#edit_produit_modal form').attr('action', '/produits/'+data.id+'/edit/')
+                    $('#edit_produit_modal form')[0].reset()
+                    $('#edit_produit_modal form #libelle').val(data.libelle)
+
+
+                    $.get("{% url 'categorie_list' %}", function(data_cat){
+                        data_cat = data_cat['categories']
+                        $('#edit_produit_modal #produit_categorie').empty()
+                        let option = null;
+                        for(let i =0;i < data_cat.length;i++){
+                            if(data_cat[i].libelle === data.categorie ){
+                                option = $('<option></option>').attr('value', data_cat[i].id).text(data_cat[i].libelle.toUpperCase());
+                                option.attr('selected','selected')
+                            }else{
+                                option = $('<option></option>').attr('value', data_cat[i].id).text(data_cat[i].libelle.toUpperCase());
+                            }
+                            $('#edit_produit_modal #produit_categorie').append(option);
+                        }
+                    });
+
+                    $('#edit_produit_modal form #prix_categorie').val(data.prix)
+                    $('#edit_produit_modal form #categorie_description').val(data.description)
+
+                })
+            })
+
+
+            bootstrapValidate('#edit_produit_modal #prix_categorie', 'numeric:Veuillez entrer un prix !!',
+                function (isvalid) {
+                if(!isvalid){
+                    $('#edit_produit_modal form').submit(function(e){
+                        e.preventDefault()
+                    })
+                }
+
+            })
+
+            bootstrapValidate('#add_produit_modal #prix_categorie', 'numeric:Veuillez entrer un prix !!',
+                function (isvalid) {
+                if(!isvalid){
+                    $('#edit_produit_modal form').submit(function(e){
+                        e.preventDefault()
+                    })
+                }
+
+            })
+        });
+    </script>
+{% endblock %}

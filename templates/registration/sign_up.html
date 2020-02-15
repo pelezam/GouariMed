@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="hold-transition login-page">
+        <div class="login-box">
+            <div class="login-logo">
+                <a href="#"><b>GouariMed</b></a>
+            </div>
+            <!-- /.login-logo -->
+            <div class="card">
+                <div class="card-body login-card-body">
+                    <p class="login-box-msg">Formulaire de création de compte</p>
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger text-center">
+                            form.errors
+                        </div>
+                    {% endif %}
+
+                    <form action="{% url 'sign_up' %}" method="post" id="sign_up_form">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" id="nom" class="form-control" placeholder="Nom" name="last_name" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" id="prenom" class="form-control" placeholder="Prenom(s)" name="first_name" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="email" id="email" class="form-control" placeholder="Email" name="email" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="tel" id="telephone" class="form-control" placeholder="Téléphone" name="telephone" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-phone"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" list="list_pays" class="form-control" name="pays" placeholder="Saisir le pays">
+                            {% include 'partials/list_des_pays.html' %}
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-flag"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <select name="structure" id="structure" class="form-control">
+                                <option value="" selected>Sélectionner la structure</option>
+                                <option value="pharmacie">Pharmacie</option>
+                                <option value="hôpital">Hôpital</option>
+                                <option value="dépôt pharmaceutique">Dépôt pharmaceutique</option>
+                                <option value="Particulier">Particulier</option>
+                            </select>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-building"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" id="password1" class="form-control" placeholder="Mot de passe" name="password1" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" id="password2" class="form-control" placeholder="confirmation du mot de passe" name="password2" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- /.col -->
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success btn-block">Enregister</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </form>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-1 mt-3 small">
+                                <a href="#">Mot de passe oublié</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1 mt-3 small float-right   ">
+                                <a href="{% url 'login' %}" class="text-center">Se connecter</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.login-card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+
+            bootstrapValidate('#telephone', "integer:Veuillez enter votre numéro de téléphone!",
+                function (isValid) {
+                    if (isValid) {
+
+                    } else {
+                       $('#sign_up_form').submit(function (e) {
+                           e.preventDefault();
+                           alert('le formulaire est incorrect')
+                       })
+                    }
+                });
+            bootstrapValidate('#structure', 'required:Ce champ est obligatoire!')
+            bootstrapValidate('#password2', 'matches:#password1:Les mots de passe doivent être identique');
+        });
+    </script>
+{% endblock %}

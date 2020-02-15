@@ -1,0 +1,51 @@
+<div class="modal fade" id="add_produit_modal">
+    <div class="modal-dialog">
+        <form action="{% url 'produit_add' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Ajouter un Produit</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="libelle">Libellé</label>
+                                <input type="text" name="libelle" class="form-control"  placeholder="Entrer le libellé de la catégorie" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="produit_categorie">Catégorie</label>
+                                <select name="categorie" id="produit_categorie" class="form-control">
+
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prix">Prix</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" name="prix" placeholder="Prix" id="prix_categorie">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">FCFA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Description">Description</label>
+                                <textarea class="form-control text-capitalize" name="description" placeholder="Description du produit"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="reset" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </form>
+    </div>>
+</div>
