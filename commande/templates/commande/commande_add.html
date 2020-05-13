@@ -1,0 +1,367 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row flex-row">
+        <div class="col-md-3 mt-3">
+            <div class="card">
+                <form class="add_ligne_commande_form" action="" method="post">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="list_categorie">Choisir la catégorie</label>
+                            <select name="categorie" id="list_categorie" class="form-control form-control-sm" required>
+                                <option value=""></option>
+                                {% for categorie in categories %}
+                                    <option value="{{ categorie.id }}">{{ categorie.libelle|upper }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="list_produits">Sélectionner l'article</label>
+                            <select name="produit" id="list_produits" class="form-control form-control-sm" required>
+                                <option value=""></option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="qte">Quantité</label>
+                            <input type="number" min="1" class="form-control form-control-sm" id="qte" step="1" onkeypress="return event.charCode >=48 && event.charCode<=57" required>
+                        </div>
+
+                        <div class="row flex-column">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="prix">Prix Unitaire</label>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control form-control-sm" id="prix_unitaire" name="prix" disabled>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text input-group-sm">FCFA</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="prix">Prix Total</label>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control form-control-sm text-danger text-bold" id="prix_total" name="prix_total" disabled>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text input-group-sm">FCFA</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success float-right add_commande_btn">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-9 mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Commandes</h3>
+                    <h4 class="float-right text-primary">Prix Total: <span class="text-danger somme_total_commande">0</span> FCFA</h4>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body" style="height: calc(100vh - 200px); overflow-y: auto">
+                    <table id="produit_table" class="table table-bordered table-striped table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Libelle</th>
+                            <th>Prix unitaire</th>
+                            <th>Qte</th>
+                            <th>prix Total</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody class="tbody_ligne_commande">
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <button class="btn btn-primary float-right valider_cmd_btn">Valider la commande</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let allProduits = {};
+        let listCommandes = {};
+
+        $(function () {
+
+            $.get('/produits/', function (data) {
+                data = data.produits;
+                for(let i=0; i<data.length;i++){
+                    allProduits[data[i].id] = data[i];
+                }
+            });
+
+            let list_categorie_value = $('#list_categorie').val()
+
+            if(list_categorie_value !== ""){
+               let id = list_categorie_value
+                resetCommandeForm();
+                $.get("/categories/"+id+"/produits/", function (data) {
+                    data = data['produits']
+                    $("#list_produits option").not(":first").remove();
+
+                    for(let i =0;i < data.length;i++){
+                        let option = $('<option></option>').attr('value', data[i].id).text(data[i].libelle.toUpperCase()+' '+data[i].dosage);
+                        $('#list_produits').append(option);
+                    }
+                })
+            }
+
+            function listProduitUpdate(){
+                let id = $(this).val()
+                resetCommandeForm();
+                $.get("/categories/"+id+"/produits/", function (data) {
+                    data = data['produits']
+                    $("#list_produits option").not(":first").remove();
+
+                    for(let i =0;i < data.length;i++){
+                        let option = $('<option></option>').attr('value', data[i].id).text(data[i].libelle.toUpperCase()+' '+data[i].dosage);
+                        $('#list_produits').append(option);
+                    }
+                })
+            }
+
+            $('#list_categorie').change(function (e) {
+                let id = $(this).val()
+                resetCommandeForm();
+                $.get("/categories/"+id+"/produits/", function (data) {
+                    data = data['produits']
+                    $("#list_produits option").not(":first").remove();
+
+                    for(let i =0;i < data.length;i++){
+                        let option = $('<option></option>').attr('value', data[i].id).text(data[i].libelle.toUpperCase()+' '+data[i].dosage);
+                        $('#list_produits').append(option);
+                    }
+                })
+            });
+
+
+            $('#list_produits').change(function(e){
+                $('#prix_unitaire').val('')
+                $('#prix_total').val('')
+                $('#qte').val('')
+                let id = $(this).val()
+                $.get('/produits/'+id+'/detail/', function (data) {
+                    $('#prix_unitaire').val(data.prix)
+                } )
+            });
+
+
+            $('#qte').keyup(function(e){
+                let qte = parseInt($(this).val())
+                let prix_unitaire = parseFloat($('#prix_unitaire').val())
+                let prix_total = qte * prix_unitaire
+                if(isNaN(prix_total)){
+                    $('#prix_total').val('0')
+                }else{
+                    $('#prix_total').val(prix_total.toFixed(2))
+                }
+
+            });
+
+            $('#qte').change(function(e){
+                let qte = parseInt($(this).val())
+                let prix_unitaire = parseFloat($('#prix_unitaire').val())
+                let prix_total = qte * prix_unitaire
+                if(isNaN(prix_total)){
+                    $('#prix_total').val('0')
+                }else{
+                    $('#prix_total').val(prix_total.toFixed(2))
+                }
+
+            });
+
+
+            function resetCommandeForm() {
+                $("#list_produits option").not(":first").remove();
+                $('#prix_unitaire').val('');
+                $('#qte').val('');
+                $('#prix_total').val('');
+            }
+
+
+            function resetCommandeFormAll() {
+
+                $('#list_categorie').val($('#list_categorie option:first')).val()
+                $("#list_produits option").not(":first").remove();
+                $('#prix_unitaire').val('');
+                $('#qte').val('');
+                $('#prix_total').val('');
+            }
+
+
+            function addLigneCommandeToTable(produit, prix_unitaire, qte, prix_total) {
+                let tr = $('<tr></tr>');
+                let td1 = $('<td class="table_cmd_libelle"></td>').text(produit);
+                let td2 = $('<td></td>').text(prix_unitaire+" Fcfa");
+                let td3 = $('<td></td>').text(qte);
+                let td4 = $('<td></td>').text(prix_total+" Fcfa");
+                let td5 = $('<td class="text-center"></td>').append("<a href=\"#\" class=\"btn btn-danger delete_ligne_commande_btn\" data-toggle=\"modal\"  data-target=\"#\">supprimer</a>&nbsp;");
+
+                tr.append(td1);
+                tr.append(td2);
+                tr.append(td3);
+                tr.append(td4);
+                tr.append(td5);
+
+                $('.tbody_ligne_commande').prepend(tr);
+
+                resetCommandeFormAll();
+
+
+                $('.delete_ligne_commande_btn').click(function (e) {
+                    let key = $(this).parent().parent().find(".table_cmd_libelle").text().toLowerCase();
+                    delete listCommandes[key];
+                    $(this).parent().parent().remove();
+                    $('.somme_total_commande').text(sommeTotalCommande())
+                });
+            }
+
+            function addLigneCommande() {
+                $('.add_commande_btn').click(function (e) {
+                    e.preventDefault();
+                    let item = null;
+
+                    if(!controlCommandeAddForm()){
+                        alert('Veuillez remplir correctement les champs');
+                    }else{
+
+                        let produit = allProduits[$("#list_produits").val()].libelle+" "+allProduits[$("#list_produits").val()].dosage;
+                        let produit_id = $("#list_produits").val();
+                        let prix_unitaire = allProduits[$("#list_produits").val()].prix;
+                        let qte = parseInt($('#qte').val());
+                        let prix_total = parseFloat($('#prix_total').val());
+                        addLigneCommandeToTable(produit, prix_unitaire, qte, prix_total);
+
+                        item = {"produit": produit.trim(), "produit_id": produit_id ,"prix_unitaire": prix_unitaire, "qte": qte, "prix_total": prix_total};
+
+                        if(produit.toLocaleLowerCase() in listCommandes){
+                            listCommandes[produit.toLocaleLowerCase()].qte+=qte
+                            listCommandes[produit.toLocaleLowerCase()].prix_total+=prix_total
+                        }else{
+                            listCommandes[produit.toLocaleLowerCase()]=item;
+                        }
+
+                        $('.somme_total_commande').text(sommeTotalCommande())
+
+                    }
+                });
+            }
+
+
+            function sommeTotalCommande(){
+                let somme = 0;
+                let value = 0;
+                for(const item in listCommandes){
+                    value = parseFloat(listCommandes[item].prix_total);
+                    somme += value
+                }
+                console.log(listCommandes)
+                return somme;
+            }
+
+            addLigneCommande();
+
+
+
+
+            $('.commande_validation_btn').click(function (e) {
+                e.preventDefault()
+                let date_livraison = $('#date_livraison');
+                if(date_livraison.val() === ""){
+                    date_livraison.addClass('is-invalid')
+                }else{
+                    if(date_livraison.hasClass('is-invalid')) {
+                        date_livraison.removeClass('is-invalid')
+                    }
+
+                    let date_today = new Date()
+                    date_today.setHours(0,0,0,0)
+                    let date_de_livraison = new Date(date_livraison.val())
+
+                    if(date_de_livraison.getTime() < date_today.getTime()){
+                        date_livraison.addClass('is-invalid')
+                        $('.date_incorrect_message').css('display','block')
+                    }else{
+                        $('.date_incorrect_message').css('display','none')
+
+                        let token = '{{csrf_token}}';
+                        $.ajax({
+                            headers: {"X-CSRFToken": token},
+                            type: "POST",
+                            url: '/commandes/create/',
+                            data: {
+                                "commandes": JSON.stringify(listCommandes),
+                                "date_livraison": date_livraison.val(),
+                            },
+                            success: function (result) {
+                                window.location.replace("{% url 'commande_list' %}")
+                            },
+                            dataType: 'json'
+                        });
+                    }
+                }
+
+            });
+
+
+
+            function controlCommandeAddForm() {
+                valid = true;
+                $('#list_categorie, #list_produits, #qte, #prix_unitaire, #prix_total ').map(function () {
+                    if($(this).val() === ""){
+                        $(this).addClass('is-invalid')
+                        valid = false
+                    }else{
+                        $(this).removeClass('is-invalid')
+                        console.log("ok")
+                        valid = true
+                    }
+                })
+
+                if(parseInt($('#qte').val()) === 0 || $('#qte').val() === ""){
+                    $('#qte').addClass('is-invalid')
+                    valid = false
+                }else{
+                    $('#qte').removeClass('is-invalid')
+                    valid = true
+                }
+
+                if(parseInt($('#prix_total').val()) != 0 && parseInt($('#prix_total').val()) != NaN ){
+                    valid = true
+                }else{
+                    valid = false
+                }
+
+                return valid;
+            }
+
+
+
+            $('.valider_cmd_btn').click(function (e) {
+                if(Object.keys(listCommandes).length > 0){
+                    jQuery.noConflict();
+                    $('#commande_validation_modal').modal('show')
+                }else{
+                    alert('Panier vide')
+                }
+
+            })
+
+        });
+    </script>
+{% endblock %}
+
+

@@ -3,7 +3,7 @@
 {% block content %}
     <div class="row">
         <div class="col mt-3">
-            <button class="btn btn-info float-left" data-target="#add_produit_modal" data-toggle="modal">Ajouter un Produit</button>
+            <button class="btn btn-info float-left" data-target="#add_produit_modal" data-toggle="modal">Ajouter un Article</button>
         </div>
     </div>
     <div class="row">
@@ -14,7 +14,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="produit_table" class="table table-bordered table-striped">
+                    <table id="produit_table" class="table table-bordered table-striped jdatatable">
                         <thead>
                         <tr>
                             <th>Libelle</th>
@@ -29,7 +29,7 @@
                             <tr>
                                 <td>{{ produit.libelle|capfirst }}</td>
                                 <td>{{ produit.prix }} Fcfa</td>
-                                <td>{{ produit.categorie|capfirst }}</td>
+                                <td>{{ produit.categorie|capfirst }} {{ produit.dosage }}</td>
                                 <td>{{ produit.description }}</td>
                                 <td class="text-center">
                                     <a href="{% url 'produit_detail' produit.id %}" class="text-lightblue produit_edit_btn" data-target="#edit_produit_modal" data-toggle="modal"><i class="fa fa-edit"></i></a>&nbsp;
@@ -46,16 +46,50 @@
 {% endblock %}
 
 {% block script %}
+
     <script>
         $(function () {
+            $('.jdatatable').DataTable( {
+                aLengthMenu: [
+                    [25, 50, 100, 200, -1],
+                    [25, 50, 100, 200, "Tout"]
+                ],
+                "language": {
+                    "url": "/media/datatable_langue/French.json"
+                },
+                "order": [[ 1, "asc" ]]
+            } );
+        })
+    </script>
+
+    <script>
+        $(function () {
+
+             {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        errorToast("{{ error }}")
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                     displayToast("{{ message }}", "{{ message.tags }}");
+                     console.log("{{ message.tags }}")
+                {% endfor %}
+            {% endif %}
+
             $.get("{% url 'categorie_list' %}", function(data){
-                $('#produit_categorie').empty()
+                $('#produit_categorie').not(":first").remove();
                 data = data['categories']
                 for(let i =0;i < data.length;i++){
                     let option = $('<option></option>').attr('value', data[i].id).text(data[i].libelle.toUpperCase());
                     $('#produit_categorie').append(option);
                 }
-            })
+            });
+
+
 
             $('.produit_edit_btn').click(function (e) {
                 e.preventDefault()
@@ -82,6 +116,7 @@
                     });
 
                     $('#edit_produit_modal form #prix_categorie').val(data.prix)
+                    $('#edit_produit_modal form #dosage').val(data.dosage)
                     $('#edit_produit_modal form #categorie_description').val(data.description)
 
                 })
@@ -90,23 +125,23 @@
 
             bootstrapValidate('#edit_produit_modal #prix_categorie', 'numeric:Veuillez entrer un prix !!',
                 function (isvalid) {
-                if(!isvalid){
-                    $('#edit_produit_modal form').submit(function(e){
-                        e.preventDefault()
-                    })
-                }
+                    if(!isvalid){
+                        $('#edit_produit_modal form').submit(function(e){
+                            e.preventDefault()
+                        })
+                    }
 
-            })
+                })
 
             bootstrapValidate('#add_produit_modal #prix_categorie', 'numeric:Veuillez entrer un prix !!',
                 function (isvalid) {
-                if(!isvalid){
-                    $('#edit_produit_modal form').submit(function(e){
-                        e.preventDefault()
-                    })
-                }
+                    if(!isvalid){
+                        $('#edit_produit_modal form').submit(function(e){
+                            e.preventDefault()
+                        })
+                    }
 
-            })
+                })
         });
     </script>
 {% endblock %}

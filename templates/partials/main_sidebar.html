@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="height: 100vh !important;">
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="#" class="brand-link elevation-4">
         <img src="/media/logo_gouarimed.jpg"
@@ -9,13 +9,13 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user (optional) -->
-        <div class="user-panel pb-3 mb-3 d-flex" style="margin-top:75px">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="/media/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                <i class="fa fa-user fa-2x"></i>
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ request.user.email }}</a>
+                <a href="{% url 'profil_detail' request.user.id %}" class="d-block">{{ request.user.email }}</a>
             </div>
         </div>
 
@@ -24,33 +24,71 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
-                        <p>
-                            Commandes
-                            <span class="right badge badge-danger">10</span>
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'produit_list' %}" class="nav-link">
-                        <i class="nav-icon far fa-calendar-alt"></i>
-                        <p>
-                            Produits
-                            <span class="badge badge-info right">2</span>
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'categorie_list' %}" class="nav-link">
-                        <i class="nav-icon fas fa-tag"></i>
-                        <p>
-                            Categories
-                            <span class="badge badge-info right">5</span>
-                        </p>
-                    </a>
-                </li>
+
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}" class="nav-link">
+                            <i class="nav-icon fas fa-th"></i>
+                            <p>
+                                Tableau de bord
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'commande_list_admin' %}" class="nav-link">
+                            <i class="nav-icon fas fa-shopping-cart"></i>
+                            <p>
+                                Commandes
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'produit_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-shopping-bag"></i>
+                            <p>
+                                Produits
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'categorie_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-tag"></i>
+                            <p>
+                                Categories
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'client_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                Liste des clients
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if not request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}" class="nav-link">
+                            <i class="nav-icon fas fa-shopping-bag"></i>
+                            <p>
+                                Liste des commandes
+                            </p>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

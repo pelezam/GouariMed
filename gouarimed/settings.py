@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'commande',
+    'client',
 ]
 
 MIDDLEWARE = [
@@ -136,5 +137,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-AUTHENTICATION_BACKENDS = ['commande.models.EmailorUsernameModelBackend']
+AUTHENTICATION_BACKENDS = ['client.models.EmailorUsernameModelBackend']
 

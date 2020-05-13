@@ -1,0 +1,69 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-3 mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Informations</div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item pr-0 pl-0">
+                            <b>Identité</b> <span class="float-right">{{ client.user.last_name|upper }} {{ client.user.first_name|capfirst }} </span>
+                        </li>
+                        <li class="list-group-item pr-0 pl-0">
+                            <b>Telephone</b> <span class="float-right">{{ client.telephone }}</span>
+                        </li>
+                        <li class="list-group-item pr-0 pl-0">
+                            <b>Email</b> <span class="float-right">{{ client.user.email }}</span>
+                        </li>
+                        <li class="list-group-item pr-0 pl-0">
+                            <b>Structure</b> <span class="float-right">{{ client.structure|capfirst }}</span>
+                        <li class="list-group-item pr-0 pl-0">
+                            <b>Pays</b> <span class="float-right">{{ client.pays }}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'client_disable' client.pk %}" class="btn btn-{{ client.user.is_active|yesno:"danger,success" }} btn-block btn-sm">{{ client.user.is_active|yesno:"Désactiver,Activer" }}</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-9 mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Liste des commandes
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Date Commande</th>
+                            <th>Status</th>
+                            <th>Date de livraison</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for commande in commandes %}
+                            <tr>
+                                <td>#{{ commande.id }}</td>
+                                <td>{{ commande.date|date }}</td>
+                                <td><span class="badge badge-warning">{{ commande.status }}</span></td>
+                                <td>{{ commande.date_livraison|default_if_none:"Non défini" }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'commande_detail' commande.id %}" class="btn btn-primary btn-sm">Voir la commande</a>&nbsp;
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -19,15 +19,20 @@
 
                             <div class="form-group">
                                 <label for="produit_categorie">Catégorie</label>
-                                <select name="categorie" id="produit_categorie" class="form-control">
-
+                                <select name="categorie" id="produit_categorie" class="form-control" required>
+                                    <option value=""></option>
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="libelle">Dosage</label>
+                                <input type="text" name="dosage" class="form-control"  placeholder="Entrer le Dosage dans le cas d'un médicament">
                             </div>
 
                             <div class="form-group">
                                 <label for="prix">Prix</label>
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control" name="prix" placeholder="Prix" id="prix_categorie">
+                                    <input type="text" class="form-control" name="prix" placeholder="Prix" id="prix_categorie" required>
                                     <div class="input-group-append">
                                         <span class="input-group-text">FCFA</span>
                                     </div>

@@ -2,8 +2,43 @@
 
 {% block content %}
     <div class="row">
-        <div class="col m-3">
-            <p></p>
+        <div class="col-4 mt-3">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ nombre_clients }}</h3>
+                    <p>Nombre d'utilisateur</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-users"></i>
+                </div>
+                <a href="{% url 'client_list' %}" class="small-box-footer">Voir la liste <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-4 mt-3">
+            <div class="small-box bg-lightblue">
+                <div class="inner">
+                    <h3>{{ nombre_commandes }}</h3>
+                    <p>Commandes</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                <a href="{% url 'commande_list_admin' %}" class="small-box-footer">Voir la liste <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-4 mt-3">
+            <div class="small-box bg-indigo">
+                <div class="inner">
+                    <h3>{{ qte_produits }}</h3>
+                    <p>Produits</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                <a href="{% url 'produit_list' %}" class="small-box-footer">Voir la liste <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-5 mt-2">
+            <div class="card">
+                <div class="card-header bg-success">
+                    <div class="card-title">
+                        Information
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item py-1">
+                            <b>Identité:</b><span class="float-right">{{ commande.profile.user.last_name|upper }} {{ commande.profile.user.first_name }}</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>Contact</b><span class="float-right">{{ commande.profile.telephone }}</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>Pays</b><span class="float-right">{{ commande.profile.pays }}</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>Structure</b><span class="float-right">{{ commande.profile.structure }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-5 mt-2">
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <div class="card-title">
+                        Information sur la commande
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item py-1">
+                            <b>Date de commande:</b><span class="float-right">{{ commande.date|date }}</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>Date de livraison prévu</b><span class="float-right">{{ commande.date_livraison }}</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>Prix Total</b><span class="float-right text-bold text-danger">{{ commande.total }} Fcfa</span>
+                        </li>
+                        <li class="list-group-item py-1">
+                            <b>status de la commande</b><span class="float-right"><span class="badge badge-warning">{{ commande.status }}</span></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-2 mt-2">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="card-title">
+                        Actions
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col text-center"><button class="btn btn-danger btn-sm">Annuler la commande</button></div>
+                    </div>
+                    <div class="row">
+                        <div class="col mt-2 text-center">
+                            {% if request.user.is_superuser %}
+                                <a href="{% url 'commande_list_admin' %}" class="btn btn-info btn-sm">Liste des commandes</a>
+                            {% else %}
+                                 <a href="{% url 'commande_list' %}" class="btn btn-info btn-sm">Liste des commandes</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Détail commande Numéro: <span class="text-bold text-primary">#{{ commande.id }}</span></h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="produit_table" class="table table-bordered table-striped jdatatable  ">
+                        <thead>
+                        <tr>
+                            <th>Nom du produit</th>
+                            <th>Quantité commandé</th>
+                            <th>P.U</th>
+                            <th>Prix Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ligne_commande in ligne_commandes %}
+                            <tr>
+                                <td>{{ ligne_commande.produit.libelle|capfirst }}</td>
+                                <td><span class="text-bold">{{ ligne_commande.qte }}</span></td>
+                                <td>{{ ligne_commande.produit.prix }} Fcfa</td>
+                                <td><span class="text-bold">{{ ligne_commande.prix_total }} Fcfa</span></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

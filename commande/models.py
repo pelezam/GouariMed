@@ -1,18 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
-from django.db.models import Q
-
-
-class Profile(models.Model):
-    telephone = models.CharField(max_length=165)
-    pays = models.CharField(max_length=255)
-    structure = models.CharField(max_length=255)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.last_name}"
+from client.models import Profile
 
 
 class Categorie(models.Model):
@@ -28,21 +16,37 @@ class Produit(models.Model):
     libelle = models.CharField(max_length=255, unique=True)
     prix = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.CharField(max_length=255, blank=True)
-    categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
+    dosage = models.CharField(max_length=100, blank=True)
+    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.libelle
 
 
-class EmailorUsernameModelBackend(ModelBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(Q(username__iexact=username) | Q(email__iexact=username))
-        except UserModel.DoesNotExist:
-            return None
-        else:
-            if user.check_password(password):
-                return user
-        return None
+class Commande(models.Model):
+    STATUS_CHOICES = (
+        ('En cours', 'En cours'),
+        ('Terminer', 'Terminer'),
+        ('Annuler', 'Annuler')
+    )
+    profile = models.ForeignKey(Profile, on_delete=models.PROTECT)
+    date = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=15, decimal_places=2, default=0, blank=True, null=True)
+    date_livraison = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=65, choices=STATUS_CHOICES, default='En cours')
+
+    def __str__(self):
+        return self.profile.user.last_name
+
+
+class LigneCommande(models.Model):
+    qte = models.PositiveIntegerField()
+    produit = models.ForeignKey(Produit, on_delete=models.PROTECT)
+    commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
+    prix_total = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} commandé par {}".format(self.qte, self.produit, self.commande.profile.user.last_name)
+
+

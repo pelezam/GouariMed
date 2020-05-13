@@ -1,0 +1,64 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col mt-3">
+            <a class="btn btn-info float-left" href="{% url 'commande_add' %}">Faire une commande</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">List des commandes</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="produit_table" class="table table-bordered table-striped jdatatable  ">
+                        <thead>
+                        <tr>
+                            <th>Numéro de la commande</th>
+                            <th>Date Commande</th>
+                            <th>Status de la commande</th>
+                            <th>Date de livraison</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for commande in commandes %}
+                            <tr>
+                                <td>#{{ commande.id }}</td>
+                                <td>{{ commande.date|date }}</td>
+                                <td><span class="badge badge-warning">{{ commande.status }}</span></td>
+                                <td>{{ commande.date_livraison|default_if_none:"Non défini" }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'commande_detail' commande.id %}" class="btn btn-primary btn-sm">Détails</a>&nbsp;
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $(function () {
+            $('.jdatatable').DataTable( {
+                aLengthMenu: [
+                    [25, 50, 100, 200, -1],
+                    [25, 50, 100, 200, "Tout"]
+                ],
+                "language": {
+                    "url": "/media/datatable_langue/French.json"
+                },
+                "order": [[ 1, "asc" ]]
+            } );
+        })
+    </script>
+
+{% endblock %}

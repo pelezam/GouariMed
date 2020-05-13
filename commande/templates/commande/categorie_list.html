@@ -27,9 +27,9 @@
                             <tr>
                                 <td>{{ categorie.libelle|capfirst }}</td>
                                 <td>{{ categorie.description }}</td>
-                                <td>
-                                    <a href="{% url 'categorie_detail' categorie.id %}" class="btn btn-info categorie_edit_btn" data-toggle="modal" data-target="#edit_categorie_modal"><i class="fa fa-edit"> Modifier</i></a>
-                                    <a href="{% url 'categorie_delete' categorie.id %}" class="btn btn-danger delete_btn" data-toggle="modal"  data-target="#delete_confirmation_modal"><i class="fa fa-trash"> Supprimer</i></a>
+                                <td class="text-center">
+                                    <a href="{% url 'categorie_detail' categorie.id %}" class="text-info categorie_edit_btn" data-toggle="modal" data-target="#edit_categorie_modal"><i class="fa fa-edit"></i></a>
+                                    <a href="{% url 'categorie_delete' categorie.id %}" class="text-danger delete_btn" data-toggle="modal"  data-target="#delete_confirmation_modal"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -46,35 +46,33 @@
 {% block script %}
     <script>
         $(function () {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000
-            });
+
 
             {% if form.errors %}
                 {% for field in form %}
                     {% for error in field.errors %}
-                        Toast.fire({
-                            type: 'error',
-                            title: '{{ error }}'
-                        })
+                        errorToast("{{ error }}")
                     {% endfor %}
+                {% endfor %}
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                     displayToast("{{ message }}", "{{ message.tags }}")
                 {% endfor %}
             {% endif %}
 
             {#edit btn#}
 
             $('.categorie_edit_btn').click(function (e) {
-               e.preventDefault();
-               url = $(this).attr('href')
-               $.get(url, function (data) {
-                   $('#edit_categorie_modal form').attr('action', '/categories/'+data.id+'/edit/')
-                   $('#edit_categorie_modal form')[0].reset()
-                   $('#edit_categorie_modal .categorie_libelle').val(data.libelle)
-                   $('#edit_categorie_modal .categorie_description').val(data.description)
-               })
+                e.preventDefault();
+                url = $(this).attr('href')
+                $.get(url, function (data) {
+                    $('#edit_categorie_modal form').attr('action', '/categories/'+data.id+'/edit/')
+                    $('#edit_categorie_modal form')[0].reset()
+                    $('#edit_categorie_modal .categorie_libelle').val(data.libelle)
+                    $('#edit_categorie_modal .categorie_description').val(data.description)
+                })
             });
         });
     </script>

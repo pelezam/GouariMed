@@ -14,7 +14,7 @@
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'dist/css/adminlte.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap/dist/css/adminlte.css' %}">
 
 
     <!-- Google Font: Source Sans Pro -->
@@ -26,15 +26,22 @@
 <body>
 {% block content %}
 {% endblock %}
+
+
+
+
 <!-- jQuery -->
 <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
 <!-- Bootstrap 4 -->
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
-<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/dist/js/adminlte.min.js' %}"></script>
+
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+
+<script src="{% static 'plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
 
 <script src="{% static 'plugins/boostrap_validate/bootstrap-validate.js' %}"></script>
-
 
 
 

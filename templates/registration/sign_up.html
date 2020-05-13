@@ -13,14 +13,18 @@
 
                     {% if form.errors %}
                         <div class="alert alert-danger text-center">
-                            form.errors
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                            {% endfor %}
                         </div>
                     {% endif %}
 
                     <form action="{% url 'sign_up' %}" method="post" id="sign_up_form">
                         {% csrf_token %}
                         <div class="input-group mb-3">
-                            <input type="text" id="nom" class="form-control" placeholder="Nom" name="last_name" required>
+                            <input type="text" id="nom" class="form-control" placeholder="Nom" name="last_name" value="{{ data.last_name }}"  required>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
@@ -28,7 +32,7 @@
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            <input type="text" id="prenom" class="form-control" placeholder="Prenom(s)" name="first_name" required>
+                            <input type="text" id="prenom" class="form-control" placeholder="Prenom(s)" name="first_name" value="{{ data.first_name }}" required>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
@@ -36,15 +40,16 @@
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            <input type="email" id="email" class="form-control" placeholder="Email" name="email" required>
+                            <input type="email" id="email" class="form-control" placeholder="Email" name="email" value="{{ data.email }}" required>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-envelope"></span>
                                 </div>
                             </div>
                         </div>
+
                         <div class="input-group mb-3">
-                            <input type="tel" id="telephone" class="form-control" placeholder="Téléphone" name="telephone" required>
+                            <input type="text" id="telephone" class="form-control" placeholder="Téléphone" name="telephone" data-inputmask='"mask": "(+999) 9999999999"' data-mask value="{{ data.telephone }}" required>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-phone"></span>
@@ -52,7 +57,7 @@
                             </div>
                         </div>
                         <div class="input-group mb-3">
-                            <input type="text" list="list_pays" class="form-control" name="pays" placeholder="Saisir le pays">
+                            <input type="text" list="list_pays" class="form-control" name="pays" placeholder="Saisir le pays" value="{{ data.pays }}" required>
                             {% include 'partials/list_des_pays.html' %}
                             <div class="input-group-append">
                                 <div class="input-group-text">
@@ -61,8 +66,8 @@
                             </div>
                         </div>
                         <div class="input-group mb-3">
+                            <label for="structure"></label>
                             <select name="structure" id="structure" class="form-control">
-                                <option value="" selected>Sélectionner la structure</option>
                                 <option value="pharmacie">Pharmacie</option>
                                 <option value="hôpital">Hôpital</option>
                                 <option value="dépôt pharmaceutique">Dépôt pharmaceutique</option>
@@ -118,22 +123,11 @@
     </div>
 {% endblock %}
 
+
 {% block script %}
     <script>
         $(function () {
-
-            bootstrapValidate('#telephone', "integer:Veuillez enter votre numéro de téléphone!",
-                function (isValid) {
-                    if (isValid) {
-
-                    } else {
-                       $('#sign_up_form').submit(function (e) {
-                           e.preventDefault();
-                           alert('le formulaire est incorrect')
-                       })
-                    }
-                });
-            bootstrapValidate('#structure', 'required:Ce champ est obligatoire!')
+            $('[data-mask]').inputmask();
             bootstrapValidate('#password2', 'matches:#password1:Les mots de passe doivent être identique');
         });
     </script>

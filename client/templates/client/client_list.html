@@ -1,0 +1,61 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">List des clients</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="produit_table" class="table table-bordered table-striped jdatatable  ">
+                        <thead>
+                        <tr>
+                            <th>Identifiant</th>
+                            <th>Nom Prénom(s)</th>
+                            <th>Email</th>
+                            <th>Telephone</th>
+                            <th>Structure</th>
+                            <th>Options</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for client in clients %}
+                            <tr>
+                                <td>#{{ client.id }}</td>
+                                <td>{{ client.user.last_name|upper }} {{ client.user.first_name|capfirst }}</td>
+                                <td>{{ client.user.email }}</td>
+                                <td>{{ client.telephone }}</td>
+                                <td>{{ client.structure }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'client_detail' client.id %}" class="btn btn-primary btn-sm">Détails</a>&nbsp;
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $(function () {
+            $('.jdatatable').DataTable( {
+                aLengthMenu: [
+                    [25, 50, 100, 200, -1],
+                    [25, 50, 100, 200, "Tout"]
+                ],
+                "language": {
+                    "url": "/media/datatable_langue/French.json"
+                },
+                "order": [[ 1, "asc" ]]
+            } );
+        })
+    </script>
+
+{% endblock %}

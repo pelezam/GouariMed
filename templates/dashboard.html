@@ -14,7 +14,7 @@
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'dist/css/adminlte.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap/dist/css/adminlte.css' %}">
 
     <link rel="stylesheet" href="{% static 'plugins/sweetalert2/sweetalert2.min.css' %}">
     <!-- Google Font: Source Sans Pro -->
@@ -25,7 +25,7 @@
 {% block style %}
 
 {% endblock %}
-<body class="hold-transition sidebar-mini layout-navbar-fixed">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 
 
 <div class="wrapper">
@@ -37,7 +37,7 @@
     {% include 'partials/main_sidebar.html' %}
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="margin-bottom: 0 !important;">
         <!-- Content Header (Page header) -->
 
         <!-- Main content -->
@@ -53,11 +53,19 @@
     <!-- /.content-wrapper -->
 
     <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark" style="height: calc(100vh - 60px);">
+    <aside class="control-sidebar control-sidebar-dark">
         <!-- Control sidebar content goes here -->
     </aside>
     <!-- /.control-sidebar -->
 </div>
+
+{#<footer class="main-footer">#}
+{#    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>#}
+{#    All rights reserved.#}
+{#    <div class="float-right d-none d-sm-inline-block">#}
+{#        <b>Version</b> 3.0.3-pre#}
+{#    </div>#}
+{#</footer>#}
 
 
 {#includes modals#}
@@ -67,41 +75,66 @@
 {% include 'commande/add_produit_modal.html' %}
 {% include 'commande/edit_produit_modal.html' %}
 {% include 'partials/delete_confirmation_modal.html' %}
+{% include 'partials/commande_validation_modal.html' %}
 
 <!-- jQuery -->
 <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
 <!-- Bootstrap 4 -->
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
-<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/dist/js/adminlte.min.js' %}"></script>
 
 <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
 
 <script src="{% static 'plugins/DataTables/datatables.min.js' %}"></script>
 
-<script src="{% static 'plugins/boostrap_validate/bootstrap-validate.js' %}"></script>
+<script src="{% static 'plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
+
 
 <script>
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 7000
+    });
+
+    function displayToast(message, type) {
+         Toast.fire({
+            type: type,
+            title: message
+        })
+    }
+
+    function successToast(message) {
+        Toast.fire({
+            type: 'success',
+            title: message
+        })
+    }
+
+    function errorToast(message) {
+        Toast.fire({
+            type: 'error',
+            title: message
+        })
+    }
+
     $(function () {
         $('.delete_btn').click(function (e) {
             e.preventDefault()
             url = $(this).attr('href')
             $('#delete_confirmation_modal .supp').attr('href', url)
-        })
+        });
 
-        $('.table').DataTable( {
-            dom: 'lBfrtip',
-            aLengthMenu: [
-                [25, 50, 100, 200, -1],
-                [25, 50, 100, 200, "Tout"]
-            ],
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            "language": {
-                "url": "/media/datatable_langue/French.json"
-            },
-        } );
+        let url = window.location.href;
+        $('.sidebar .nav-item a').each(function() {
+            if (url === this.href) {
+               $(this).addClass('active');
+            }
+        });
+
     })
 </script>
 
